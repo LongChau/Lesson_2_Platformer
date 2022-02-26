@@ -31,7 +31,7 @@ TextureImporter:
     second: Player_Run_3
   - first:
       213: 7688581598637237426
-    second: Player_Run_4
+    second: Player_Jump
   - first:
       213: 3659897147900411194
     second: Player_Attack_1_0
@@ -442,7 +442,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Player_Run_4
+      name: Player_Jump
       rect:
         serializedVersion: 2
         x: 10
