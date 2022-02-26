@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] PlayerState _state;
     [SerializeField] float _rayLength;
     [SerializeField] Transform _checkGround;
+    [SerializeField] Rigidbody2D _rigid2d;
+    [SerializeField] float _jumpForce;
     public float _speed;
 
     [SerializeField] private bool _isOnGround;
@@ -29,13 +31,19 @@ public class PlayerController : MonoBehaviour
         if (_state == PlayerState.Jump)
         {
             // TODO: What should I do?
-
+            if (_isOnGround)
+            {
+                _state = PlayerState.Idle;
+                _anim.SetTrigger("idle");
+            }
+            return;
         }
 
         if (Input.GetKeyDown(KeyCode.Space) && _isOnGround)
         {
             _state = PlayerState.Jump;
             _anim.SetTrigger("jump");
+            _rigid2d.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
             return;
         }
 
@@ -52,6 +60,7 @@ public class PlayerController : MonoBehaviour
             _render.flipX = false;
             _anim.SetBool("run", true);
             transform.Translate(Vector2.left * _speed * Time.deltaTime);
+            //_rigid2d.velocity += Vector2.left * _speed * Time.deltaTime;
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
@@ -59,6 +68,7 @@ public class PlayerController : MonoBehaviour
             _render.flipX = true;
             _anim.SetBool("run", true);
             transform.Translate(Vector2.right * _speed * Time.deltaTime);
+            //_rigid2d.velocity -= Vector2.left * _speed * Time.deltaTime;
         }
         else
         {

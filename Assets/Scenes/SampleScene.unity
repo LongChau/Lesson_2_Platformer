@@ -459,6 +459,8 @@ MonoBehaviour:
   _state: 0
   _rayLength: 0.5
   _checkGround: {fileID: 2088571480}
+  _rigid2d: {fileID: 1449039931}
+  _jumpForce: 10
   _speed: 5
   _isOnGround: 0
 --- !u!61 &1449039934
