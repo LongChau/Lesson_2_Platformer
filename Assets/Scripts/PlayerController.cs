@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -12,6 +13,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Transform _checkGround;
     [SerializeField] Rigidbody2D _rigid2D;
     [SerializeField] float _jumpForce;
+    [SerializeField] BoxCollider2D _hitBox;
+
     public float _speed;
 
     [SerializeField] private bool _isOnGround;
@@ -51,6 +54,7 @@ public class PlayerController : MonoBehaviour
         {
             _state = PlayerState.Attack;
             _anim.SetTrigger("attack");
+            Attack();
             return;
         }
 
@@ -80,6 +84,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private async void Attack()
+    {
+        _hitBox.enabled = true;
+        await Task.Delay(1000);
+        _hitBox.enabled = false;
+    }
+
     // This function is called every fixed framerate frame, if the MonoBehaviour is enabled
     private void FixedUpdate()
     {
@@ -100,6 +111,8 @@ public class PlayerController : MonoBehaviour
             _isOnGround = false;
         // Ngắn hơn.
         //_isOnGround = hit.collider && hit.collider.CompareTag("Ground");
+
+        _anim.SetBool("isGround", _isOnGround);
     }
 
     public void OnAttack_01_End()
