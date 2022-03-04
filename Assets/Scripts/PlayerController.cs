@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] PlayerState _state;
     [SerializeField] float _rayLength;
     [SerializeField] Transform _checkGround;
-    [SerializeField] Rigidbody2D _rigid2d;
+    [SerializeField] Rigidbody2D _rigid2D;
     [SerializeField] float _jumpForce;
     public float _speed;
 
@@ -25,25 +25,25 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //Debug.Log($"Update: {Time.deltaTime}");
         CheckOnGround();
 
         if (_state == PlayerState.Attack) return;
         if (_state == PlayerState.Jump)
         {
-            // TODO: What should I do?
-            if (_isOnGround)
-            {
-                _state = PlayerState.Idle;
-                _anim.SetTrigger("idle");
-            }
-            return;
+            //if (_isOnGround)
+            //{
+            //    _state = PlayerState.Idle;
+            //    _anim.SetTrigger("idle");
+            //}
+            //return;
         }
 
         if (Input.GetKeyDown(KeyCode.Space) && _isOnGround)
         {
             _state = PlayerState.Jump;
             _anim.SetTrigger("jump");
-            _rigid2d.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
+            _rigid2D.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
             return;
         }
 
@@ -60,7 +60,6 @@ public class PlayerController : MonoBehaviour
             _render.flipX = false;
             _anim.SetBool("run", true);
             transform.Translate(Vector2.left * _speed * Time.deltaTime);
-            //_rigid2d.velocity += Vector2.left * _speed * Time.deltaTime;
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
@@ -68,10 +67,10 @@ public class PlayerController : MonoBehaviour
             _render.flipX = true;
             _anim.SetBool("run", true);
             transform.Translate(Vector2.right * _speed * Time.deltaTime);
-            //_rigid2d.velocity -= Vector2.left * _speed * Time.deltaTime;
         }
         else
         {
+            if (_state == PlayerState.Jump && !_isOnGround) return;
             if (_state != PlayerState.Idle)
             {
                 _state = PlayerState.Idle;
@@ -79,6 +78,16 @@ public class PlayerController : MonoBehaviour
                 _anim.SetTrigger("idle");
             }
         }
+    }
+
+    // This function is called every fixed framerate frame, if the MonoBehaviour is enabled
+    private void FixedUpdate()
+    {
+        //Debug.Log($"FixedUpdate: {Time.fixedDeltaTime}");
+        //if (_state == PlayerState.Jump && _isOnGround)
+        //{
+        //    _rigid2D.AddForce(Vector2.up * _jumpForce);
+        //}
     }
 
     private void CheckOnGround()
@@ -98,6 +107,18 @@ public class PlayerController : MonoBehaviour
         Debug.Log("OnAttack_01_End");
         _state = PlayerState.Idle;
         _anim.SetTrigger("idle");
+    }
+
+    [ContextMenu("Test_Force")]
+    private void Test_Force()
+    {
+        _rigid2D.AddForce(Vector2.up * _jumpForce, ForceMode2D.Force);
+    }
+
+    [ContextMenu("Test_ForceImpulse")]
+    private void Test_ForceImpulse()
+    {
+        _rigid2D.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
     }
 }
 
