@@ -18,6 +18,10 @@ public class PlayerController : MonoBehaviour
     public float _speed;
 
     [SerializeField] private bool _isOnGround;
+    private bool _isFlip;
+
+    [SerializeField] private float _attackTime = 0.5f;
+    private float _time;
     
     // Start is called before the first frame update
     void Start()
@@ -28,6 +32,13 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //_time -= Time.deltaTime;
+        //if (_time <= 0)
+        //{
+        //    _hitBox.enabled = false;
+        //    _time = 0;
+        //}
+
         //Debug.Log($"Update: {Time.deltaTime}");
         CheckOnGround();
 
@@ -54,21 +65,27 @@ public class PlayerController : MonoBehaviour
         {
             _state = PlayerState.Attack;
             _anim.SetTrigger("attack");
-            Attack();
+            //AttackAsync();
+            //_hitBox.enabled = true;
+            //_time = _attackTime;
             return;
         }
 
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             _state = PlayerState.Run;
-            _render.flipX = false;
+            //_render.flipX = false;
+            if (_isFlip)
+                Flip();
             _anim.SetBool("run", true);
             transform.Translate(Vector2.left * _speed * Time.deltaTime);
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
             _state = PlayerState.Run;
-            _render.flipX = true;
+            //_render.flipX = true;
+            if (!_isFlip)
+                Flip();
             _anim.SetBool("run", true);
             transform.Translate(Vector2.right * _speed * Time.deltaTime);
         }
@@ -84,10 +101,18 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private async void Attack()
+    private void Flip()
+    {
+        _isFlip = !_isFlip;
+        Vector3 scale = transform.localScale;
+        scale.x *= -1;
+        transform.localScale = scale;
+    }
+
+    private async void AttackAsync()
     {
         _hitBox.enabled = true;
-        await Task.Delay(1000);
+        await Task.Delay(100);
         _hitBox.enabled = false;
     }
 
@@ -117,9 +142,15 @@ public class PlayerController : MonoBehaviour
 
     public void OnAttack_01_End()
     {
-        Debug.Log("OnAttack_01_End");
+        //Debug.Log("OnAttack_01_End");
         _state = PlayerState.Idle;
         _anim.SetTrigger("idle");
+        _hitBox.enabled = false;
+    }
+
+    public void OnAttack_01()
+    {
+        _hitBox.enabled = true;
     }
 
     [ContextMenu("Test_Force")]
