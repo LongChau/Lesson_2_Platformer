@@ -67,28 +67,28 @@ TextureImporter:
     second: PC Computer - MapleStory - Extra A_20
   - first:
       213: 4092803426345647800
-    second: PC Computer - MapleStory - Extra A_21
+    second: Player_Attack_2_2
   - first:
       213: -929368345057595917
-    second: PC Computer - MapleStory - Extra A_22
+    second: Player_Attack_2_3
   - first:
       213: -9046857940717068553
-    second: PC Computer - MapleStory - Extra A_23
+    second: Player_Attack_2_4
   - first:
       213: -5830190713677193996
-    second: PC Computer - MapleStory - Extra A_24
+    second: Player_Attack_2_5
   - first:
       213: 9046163491929383930
-    second: PC Computer - MapleStory - Extra A_25
+    second: Player_Attack_2_0
   - first:
       213: -7540168578968013794
-    second: PC Computer - MapleStory - Extra A_26
+    second: Player_Attack_2_1
   - first:
       213: 6223218750500023130
     second: PC Computer - MapleStory - Extra A_27
   - first:
       213: 3117768972647992005
-    second: PC Computer - MapleStory - Extra A_28
+    second: Hurt
   - first:
       213: -8589052884831944585
     second: PC Computer - MapleStory - Extra A_29
@@ -610,7 +610,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PC Computer - MapleStory - Extra A_21
+      name: Player_Attack_2_2
       rect:
         serializedVersion: 2
         x: 131
@@ -631,7 +631,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PC Computer - MapleStory - Extra A_22
+      name: Player_Attack_2_3
       rect:
         serializedVersion: 2
         x: 214
@@ -652,7 +652,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PC Computer - MapleStory - Extra A_23
+      name: Player_Attack_2_4
       rect:
         serializedVersion: 2
         x: 298
@@ -673,7 +673,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PC Computer - MapleStory - Extra A_24
+      name: Player_Attack_2_5
       rect:
         serializedVersion: 2
         x: 382
@@ -694,7 +694,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PC Computer - MapleStory - Extra A_25
+      name: Player_Attack_2_0
       rect:
         serializedVersion: 2
         x: 10
@@ -715,7 +715,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PC Computer - MapleStory - Extra A_26
+      name: Player_Attack_2_1
       rect:
         serializedVersion: 2
         x: 73
@@ -757,7 +757,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PC Computer - MapleStory - Extra A_28
+      name: Hurt
       rect:
         serializedVersion: 2
         x: 6

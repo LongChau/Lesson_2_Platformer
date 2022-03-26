@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class DamageObject : MonoBehaviour
 {
+    [SerializeField] BoxCollider2D _hitBox;
+    [SerializeField] LayerMask _mask;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -16,12 +19,19 @@ public class DamageObject : MonoBehaviour
         
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void Attack()
     {
-        if (collision.CompareTag("Enemy"))
+        var cols = Physics2D.OverlapBoxAll(_hitBox.transform.position,
+            _hitBox.size * transform.localScale.x, 0f, _mask);
+        foreach (var col in cols)
         {
-            Debug.Log($"{collision.gameObject}");
-            collision.GetComponent<EnemyController>().TakeDamage(1);
+            col.GetComponent<ITakeDamageable>()?.TakeDamage(this, 1);
         }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(_hitBox.transform.position, _hitBox.size * transform.parent.localScale.x);
     }
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, ITakeDamageable
 {
     [SerializeField] Animator _anim;
     [SerializeField] SpriteRenderer _render;
@@ -13,7 +13,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Transform _checkGround;
     [SerializeField] Rigidbody2D _rigid2D;
     [SerializeField] float _jumpForce;
-    [SerializeField] BoxCollider2D _hitBox;
+    [SerializeField] DamageObject _damgObj;
+    [SerializeField] float _knockbackForce;
+
+    [SerializeField] int _hp;
 
     public float _speed;
 
@@ -22,6 +25,12 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private float _attackTime = 0.5f;
     private float _time;
+
+    [SerializeField] float _lockDamgTime = 1f;
+    private float _damgTime;
+    private bool _isLockDamg;
+
+    private int _animCombo = 0;
     
     // Start is called before the first frame update
     void Start()
@@ -32,25 +41,23 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //_time -= Time.deltaTime;
-        //if (_time <= 0)
-        //{
-        //    _hitBox.enabled = false;
-        //    _time = 0;
-        //}
+        if (_isLockDamg)
+        {
+            _damgTime += Time.deltaTime;
+            if (_damgTime >= _lockDamgTime)
+            {
+                _damgTime = 0;
+                _isLockDamg = false;
+            }
+        }
 
-        //Debug.Log($"Update: {Time.deltaTime}");
         CheckOnGround();
 
         if (_state == PlayerState.Attack) return;
-        if (_state == PlayerState.Jump)
+        if (_state == PlayerState.Hurt) return;
+        if (_state == PlayerState.Jump && _isOnGround && _rigid2D.velocity.y > 0f)
         {
-            //if (_isOnGround)
-            //{
-            //    _state = PlayerState.Idle;
-            //    _anim.SetTrigger("idle");
-            //}
-            //return;
+            _isOnGround = false;
         }
 
         if (Input.GetKeyDown(KeyCode.Space) && _isOnGround)
@@ -74,6 +81,8 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             _state = PlayerState.Run;
+            if (_isOnGround)
+                _rigid2D.velocity = Vector2.zero;
             //_render.flipX = false;
             if (_isFlip)
                 Flip();
@@ -83,6 +92,8 @@ public class PlayerController : MonoBehaviour
         else if (Input.GetKey(KeyCode.RightArrow))
         {
             _state = PlayerState.Run;
+            if (_isOnGround)
+                _rigid2D.velocity = Vector2.zero;
             //_render.flipX = true;
             if (!_isFlip)
                 Flip();
@@ -95,11 +106,39 @@ public class PlayerController : MonoBehaviour
             if (_state != PlayerState.Idle)
             {
                 _state = PlayerState.Idle;
+                _rigid2D.velocity = Vector2.zero;
                 _anim.SetBool("run", false);
                 _anim.SetTrigger("idle");
             }
         }
     }
+
+    public void Handle_Event_EndHurt()
+    {
+        Debug.Log("EndHurt");
+        _state = PlayerState.None;
+    }
+
+    public void TakeDamage(DamageObject damgObj, int damg)
+    {
+        if (_isLockDamg) return;
+        Debug.Log("<color=yellow>Player take damage</color>");
+        _hp -= damg;
+        _isLockDamg = true;
+        _state = PlayerState.Hurt;
+        _anim.SetTrigger("Hurt");
+
+        var direction = (transform.position - damgObj.transform.position).normalized;
+        direction.y = 0f;
+        _rigid2D.AddForce(direction * _knockbackForce, ForceMode2D.Impulse);
+        //WaitForLockDamgAsync();
+    }
+
+    //async void WaitForLockDamgAsync()
+    //{
+    //    await Task.Delay((int)_lockDamgTime * 1000);
+    //    _isLockDamg = false;
+    //}
 
     private void Flip()
     {
@@ -109,12 +148,12 @@ public class PlayerController : MonoBehaviour
         transform.localScale = scale;
     }
 
-    private async void AttackAsync()
-    {
-        _hitBox.enabled = true;
-        await Task.Delay(100);
-        _hitBox.enabled = false;
-    }
+    //private async void AttackAsync()
+    //{
+    //    _hitBox.enabled = true;
+    //    await Task.Delay(100);
+    //    _hitBox.enabled = false;
+    //}
 
     // This function is called every fixed framerate frame, if the MonoBehaviour is enabled
     private void FixedUpdate()
@@ -130,27 +169,34 @@ public class PlayerController : MonoBehaviour
     {
         Debug.DrawRay(_checkGround.position, Vector2.down * _rayLength, Color.red);
         var hit = Physics2D.Raycast(_checkGround.position, Vector2.down, _rayLength);
-        if (hit.collider && hit.collider.CompareTag("Ground"))
-            _isOnGround = true;
-        else
-            _isOnGround = false;
         // Ngắn hơn.
-        //_isOnGround = hit.collider && hit.collider.CompareTag("Ground");
+        _isOnGround = hit.collider && hit.collider.CompareTag("Ground");
 
         _anim.SetBool("isGround", _isOnGround);
     }
 
-    public void OnAttack_01_End()
+    // OnTriggerEnter2D is called when the Collider2D other enters the trigger (2D physics only)
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("WinObj"))
+        {
+            Debug.Log("Win");
+            UnityEngine.SceneManagement.SceneManager.LoadScene("SampleScene");
+        }
+    }
+
+    public void OnAttack_01_End(int value)
     {
         //Debug.Log("OnAttack_01_End");
         _state = PlayerState.Idle;
         _anim.SetTrigger("idle");
-        _hitBox.enabled = false;
+        _animCombo = value;
+        _anim.SetInteger("AttackCombo", _animCombo);
     }
 
     public void OnAttack_01()
     {
-        _hitBox.enabled = true;
+        _damgObj.Attack();
     }
 
     [ContextMenu("Test_Force")]
@@ -174,4 +220,5 @@ public enum PlayerState
     Attack = 3,
     Jump = 4,
     Dead = 5,
+    Hurt = 6,
 }
